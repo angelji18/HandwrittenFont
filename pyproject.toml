@@ -6,8 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "handwriting-font"
 version = "0.1.0"
 description = "Learn to extract handwritten glyphs from a known grid."
-requires-python = ">=3.9"
-dependencies = ["Pillow"]
+requires-python = ">=3.10"
+dependencies = ["Pillow", "vtracer==0.6.11"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

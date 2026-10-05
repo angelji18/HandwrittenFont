@@ -6,10 +6,10 @@ configured manually; the code does not recognize characters or detect styles.
 
 ## Setup
 
-Requires Python 3.9 or newer. Run from the project directory:
+Requires Python 3.10 or newer. Run from the project directory (Python 3.12 shown):
 
 ```sh
-python3 -m venv .venv
+python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -e .
@@ -45,4 +45,31 @@ The current coordinates are for the included 2500 x 3000 PNG.
 
 Use `--image`, `--config`, and `--output` to select different paths.
 
-Vector conversion and font generation are not implemented yet.
+## Trace SVG outlines
+
+After extracting glyphs, run:
+
+```sh
+python -m handwriting_font.vectorize
+```
+
+Pillow separates dark ink from the light background; [VTracer](https://pypi.org/project/vtracer/0.6.11/)
+traces the black shapes into curves. Outputs are `build/monochrome/` (prepared
+PNGs) and `build/svg/` (156 SVGs), with the same folder structure as the glyphs.
+Spaces produce empty SVGs. Colored underlines remain PNG assets.
+
+Open an SVG in a browser to inspect it. Use `--threshold 200` to include more
+faint ink, or a lower value to include less (default: 180). Tracing approximates
+the handwriting, so review outlines before building the font.
+
+## From handwriting to a font
+
+```text
+PNG glyphs → trace outlines → SVG shapes → add character mapping and spacing → TTF font
+```
+
+- **PNG (Portable Network Graphics):** an image made of pixels, like our cropped letters.
+- **SVG (Scalable Vector Graphics):** lines and curves describing each letter's shape, so it scales smoothly.
+- **TTF (TrueType Font):** a font containing those outlines, character mappings, and spacing, so applications can use them when you type.
+
+PNG cropping and SVG conversion are complete. TTF generation is next.
