@@ -1,0 +1,44 @@
+{
+  "sections": [
+    {
+      "name": "thin",
+      "grid_left": 120,
+      "grid_top": 100,
+      "cell_width": 140,
+      "cell_height": 140,
+      "include_space": true,
+      "rows": ["ABCDEFGHIJKLMNOP", "QRSTUVWXYZ", "abcdefghijklmnop", "qrstuvwxyz", "0123456789"]
+    },
+    {
+      "name": "punctuation",
+      "grid_left": 120,
+      "grid_top": 940,
+      "cell_width": 140,
+      "cell_height": 140,
+      "rows": [".,:;!?“”‘'’…%#&@", "()[]{}+-−=≠/\\*×_", "|<>≥≤~^`"]
+    },
+    {
+      "name": "bold",
+      "grid_left": 120,
+      "grid_top": 1900,
+      "cell_width": 140,
+      "cell_height": 150,
+      "include_space": true,
+      "rows": ["ABCDEFGHIJKLMNOP", "QRSTUVWXYZ", "abcdefghijklmnop", "qrstuvwxyz"],
+      "crop_overrides": {
+        "Q": [120, 2050, 260, 2220],
+        "a": [120, 2220, 260, 2350]
+      }
+    }
+  ],
+  "underlines": {
+    "pink_wavy": [110, 1568, 544, 1620],
+    "orange_wavy": [547, 1530, 980, 1579],
+    "yellow_double": [110, 1680, 265, 1725],
+    "yellow_single": [265, 1715, 398, 1745],
+    "red_single": [401, 1690, 544, 1725],
+    "red_double": [545, 1690, 687, 1750],
+    "green_single": [691, 1720, 823, 1750],
+    "green_double": [823, 1690, 980, 1755]
+  }
+}
