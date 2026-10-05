@@ -1,18 +1,19 @@
 {
   "family_name": "My Handwriting",
+  "version": "0.4",
   "units_per_em": 1000,
   "scale": 6,
-  "side_bearing": 45,
+  "side_bearing": 35,
   "space_width": 300,
   "ascent": 900,
   "descent": 300,
   "baseline_offsets": {
     "Q": 15,
     "f": 20,
-    "g": 30,
+    "g": 36.667,
     "j": 30,
     "p": 30,
-    "q": 30,
+    "q": 31.667,
     "y": 30,
     ",": 12,
     ";": 12,
@@ -36,5 +37,11 @@
     "~": -35,
     "^": -75,
     "`": -75
+  },
+  "styles": {
+    "Regular": {
+      "baseline_offsets": {"g": 38.334},
+      "glyph_scales": {"i": 0.95, "t": 1.05}
+    }
   }
 }

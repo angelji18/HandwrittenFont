@@ -55,12 +55,14 @@ python -m handwriting_font.vectorize
 
 Pillow separates dark ink from the light background; [VTracer](https://pypi.org/project/vtracer/0.6.11/)
 traces the black shapes into curves. Outputs are `build/monochrome/` (prepared
-PNGs) and `build/svg/` (156 SVGs), with the same folder structure as the glyphs.
+PNGs) and `build/svg/` (166 SVGs, including digit copies for Bold).
 Spaces produce empty SVGs. Colored underlines remain PNG assets.
 
-Open an SVG in a browser to inspect it. Use `--threshold 200` to include more
-faint ink, or a lower value to include less (default: 180). Tracing approximates
-the handwriting, so review outlines before building the font.
+Open an SVG in a browser to inspect it. Thin glyphs use a threshold of 140
+to keep strokes lighter; bold and punctuation use 180. Use `--thin-threshold`
+to adjust thin glyphs and `--threshold` for the others. Higher values include
+more faint ink; lower values produce thinner strokes but may lose detail.
+Bold's digit copies use the original threshold so thinning Regular does not affect Bold.
 
 ## Build the TTF
 
@@ -72,14 +74,18 @@ python -m handwriting_font.build_font --style bold
 ```
 
 Creates `build/fonts/MyHandwriting-Regular.ttf` and `MyHandwriting-Bold.ttf`,
-each with 103 characters. Bold uses the thicker letters and shares the thin
-digits and punctuation. Install both TTFs, then select **My Handwriting** and
+each with 103 characters. Bold uses the thicker letters, copies of the digit
+drawings at their original thickness, and shared punctuation. Install both TTFs, then select **My Handwriting** and
 choose Regular or Bold in an application that supports installed fonts.
 
 `config/font.json` controls the font name, scale, spacing, and baseline offsets.
+Its `version` identifies rebuilt fonts when replacing an installed copy.
 `side_bearing` sets the margin on each side of a character; `space_width` sets word spacing.
 Positive offsets place strokes below the baseline; negative offsets raise
-them. [fontTools](https://github.com/fonttools/fonttools) converts SVG curves
+them. Offsets are in source-image pixels and multiplied by `scale`.
+`styles` supplies overrides for Regular or Bold; `glyph_scales` adjusts
+individual letter sizes (for example, `0.95` means 5% smaller).
+[fontTools](https://github.com/fonttools/fonttools) converts SVG curves
 to TrueType curves and packages the character mappings and font information.
 Both styles use simple spacing with no kerning (adjustments between pairs
 of letters). Colored underlines remain separate image assets.

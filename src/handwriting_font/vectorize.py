@@ -55,9 +55,12 @@ def main():
     parser.add_argument("--prepared", type=Path, default=Path("build/monochrome"))
     parser.add_argument("--output", type=Path, default=Path("build/svg"))
     parser.add_argument("--threshold", type=int, default=180)
+    parser.add_argument("--thin-threshold", type=int, default=140)
     args = parser.parse_args()
     if not 1 <= args.threshold <= 255:
         parser.error("--threshold must be between 1 and 255")
+    if not 1 <= args.thin_threshold <= 255:
+        parser.error("--thin-threshold must be between 1 and 255")
 
     # Only character folders are traced; colored underlines remain PNG assets.
     sources = []
@@ -66,16 +69,25 @@ def main():
     if not sources:
         parser.error("No glyph PNGs found. Run python -m handwriting_font first.")
 
+    count = 0
     for source in sources:
         relative_path = source.relative_to(args.input)
+        threshold = args.thin_threshold if relative_path.parts[0] == "thin" else args.threshold
         trace_glyph(
             source,
             args.prepared / relative_path,
             (args.output / relative_path).with_suffix(".svg"),
-            args.threshold,
+            threshold,
         )
-    print(f"Saved {len(sources)} prepared PNGs to {args.prepared}")
-    print(f"Saved {len(sources)} SVGs to {args.output}")
+        count += 1
+        # Bold reuses the digit drawings, but keeps their original thickness.
+        if relative_path.parts[:2] == ("thin", "digits"):
+            bold_path = Path("bold") / "digits" / source.name
+            trace_glyph(source, args.prepared / bold_path,
+                        (args.output / bold_path).with_suffix(".svg"), args.threshold)
+            count += 1
+    print(f"Saved {count} prepared PNGs to {args.prepared}")
+    print(f"Saved {count} SVGs to {args.output}")
 
 
 if __name__ == "__main__":

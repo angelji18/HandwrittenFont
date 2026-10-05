@@ -29,7 +29,7 @@ def svg_to_glyph(path, character, settings):
         return pen.glyph(), (settings["space_width"], 0)
 
     left, _, _, bottom = bounds_pen.bounds
-    scale = settings["scale"]
+    scale = settings["scale"] * settings.get("glyph_scales", {}).get(character, 1)
     margin = settings["side_bearing"]
     offset = settings["baseline_offsets"].get(character, 0)
     # SVG y increases downward; font y increases upward from the baseline.
@@ -58,6 +58,13 @@ def missing_glyph():
 
 def build_font(svg_directory, sections, settings, output_path, style="Regular"):
     """Map configured characters to glyphs and package the required TTF tables."""
+    # Apply style-specific settings without changing the shared configuration.
+    style_settings = settings.get("styles", {}).get(style, {})
+    offsets = settings["baseline_offsets"].copy()
+    offsets.update(style_settings.get("baseline_offsets", {}))
+    settings = settings.copy()
+    settings.update(style_settings)
+    settings["baseline_offsets"] = offsets
     glyphs = {".notdef": missing_glyph()}
     metrics = {".notdef": (600, 50)}
     character_map = {}
@@ -83,14 +90,15 @@ def build_font(svg_directory, sections, settings, output_path, style="Regular"):
     ascent, descent = settings["ascent"], settings["descent"]
     font.setupHorizontalHeader(ascent=ascent, descent=-descent)
     family = settings["family_name"]
+    version = settings["version"]
     is_bold = style == "Bold"
     font.setupNameTable({
         "familyName": family,
         "styleName": style,
-        "uniqueFontIdentifier": f"{family}-{style}-0.1",
+        "uniqueFontIdentifier": f"{family}-{style}-{version}",
         "fullName": f"{family} {style}",
         "psName": f"{family.replace(' ', '')}-{style}",
-        "version": "Version 0.1",
+        "version": f"Version {version}",
     })
     font.setupOS2(
         sTypoAscender=ascent, sTypoDescender=-descent, sTypoLineGap=0,
@@ -99,6 +107,7 @@ def build_font(svg_directory, sections, settings, output_path, style="Regular"):
         fsSelection=0x20 if is_bold else 0x40,
     )
     font.font["head"].macStyle = 1 if is_bold else 0
+    font.font["head"].fontRevision = float(version)
     font.setupPost()
     output_path.parent.mkdir(parents=True, exist_ok=True)
     font.save(output_path)
@@ -124,10 +133,10 @@ def main():
             parser.error(f"Grid configuration is missing the {name} section.")
     sections = [by_name[letter_section], by_name["punctuation"]]
     if args.style == "bold":
-        # The sheet has no bold digits, so reuse only the thin digit outlines.
+        # Use copies of the thin digit drawings traced at the bold threshold.
         digits = "".join(character for row in by_name["thin"]["rows"]
                          for character in row if character in "0123456789")
-        sections.append({"name": "thin", "rows": [digits]})
+        sections.append({"name": "bold", "rows": [digits]})
     style = args.style.title()
     output = args.output or Path(f"build/fonts/MyHandwriting-{style}.ttf")
     build_font(args.input, sections, settings, output, style)
