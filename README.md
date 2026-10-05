@@ -62,6 +62,28 @@ Open an SVG in a browser to inspect it. Use `--threshold 200` to include more
 faint ink, or a lower value to include less (default: 180). Tracing approximates
 the handwriting, so review outlines before building the font.
 
+## Build the TTF
+
+After tracing the SVGs, run:
+
+```sh
+python -m handwriting_font.build_font
+python -m handwriting_font.build_font --style bold
+```
+
+Creates `build/fonts/MyHandwriting-Regular.ttf` and `MyHandwriting-Bold.ttf`,
+each with 103 characters. Bold uses the thicker letters and shares the thin
+digits and punctuation. Install both TTFs, then select **My Handwriting** and
+choose Regular or Bold in an application that supports installed fonts.
+
+`config/font.json` controls the font name, scale, spacing, and baseline offsets.
+`side_bearing` sets the margin on each side of a character; `space_width` sets word spacing.
+Positive offsets place strokes below the baseline; negative offsets raise
+them. [fontTools](https://github.com/fonttools/fonttools) converts SVG curves
+to TrueType curves and packages the character mappings and font information.
+Both styles use simple spacing with no kerning (adjustments between pairs
+of letters). Colored underlines remain separate image assets.
+
 ## From handwriting to a font
 
 ```text
@@ -72,4 +94,4 @@ PNG glyphs → trace outlines → SVG shapes → add character mapping and spaci
 - **SVG (Scalable Vector Graphics):** lines and curves describing each letter's shape, so it scales smoothly.
 - **TTF (TrueType Font):** a font containing those outlines, character mappings, and spacing, so applications can use them when you type.
 
-PNG cropping and SVG conversion are complete. TTF generation is next.
+PNG cropping, SVG conversion, and Regular/Bold TTFs are complete. WOFF2 is not implemented yet.

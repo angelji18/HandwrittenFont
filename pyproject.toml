@@ -7,7 +7,7 @@ name = "handwriting-font"
 version = "0.1.0"
 description = "Learn to extract handwritten glyphs from a known grid."
 requires-python = ">=3.10"
-dependencies = ["Pillow", "vtracer==0.6.11"]
+dependencies = ["Pillow", "vtracer==0.6.11", "fonttools>=4.50,<5"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
